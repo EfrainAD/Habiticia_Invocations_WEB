@@ -1,0 +1,6 @@
+.stats-button-filter-wrapper button {
+   margin: 5px;
+}
+.stats-button-filter-wrapper button.selected {
+   font-weight: bold;
+}

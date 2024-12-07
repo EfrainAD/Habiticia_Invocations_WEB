@@ -10,11 +10,33 @@
       <title>Habiticia Invocations</title>
       <meta name="description" content="" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <link rel="stylesheet" href="" />
+      <link rel="stylesheet" href="./styles.css" />
    </head>
    <body>
-      <h1>Habiticia Invocations</h1>
-      <p class="browsehappy">Let's <strong>Begin</strong>!</p>
+      <header>
+         <h1>Habitica Invocations</h1>
+         <h2>Find the Best Quest by Best Weapon</h2>
+      </header>
+
+      <section aria-labelledby="quests-section">
+         <h3 id="quests-section">Choose Your Stat for Best Quest</h3>
+         <div class="stats-button-filter-wrapper">
+            <button data-stat="int" aria-label="Filter quests by Intelligence">
+               Int
+            </button>
+            <button data-stat="str" aria-label="Filter quests by Strength">
+               Str
+            </button>
+            <button data-stat="per" aria-label="Filter quests by Perception">
+               Per
+            </button>
+            <button data-stat="con" aria-label="Filter quests by Constitution">
+               Con
+            </button>
+         </div>
+      </section>
+
+      <p id="best-quests">Let's <strong>Begin</strong>!</p>
 
       <script src="./script.js" async defer></script>
    </body>
