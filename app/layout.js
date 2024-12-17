@@ -3,6 +3,7 @@ import './globals.css'
 import { getServerSession } from 'next-auth'
 import SessionProvider from '@/app/components/SessionProvider.js'
 import NavMenu from './components/NavMenu.js'
+import { HabiticaProvider } from './context/habiticaAuth.js'
 
 const geistSans = localFont({
    src: './fonts/GeistVF.woff',
@@ -25,10 +26,12 @@ export default async function RootLayout({ children }) {
    return (
       <html lang="en">
          <SessionProvider session={session}>
-            <body className={`${geistSans.variable} ${geistMono.variable}`}>
-               <NavMenu />
-               {children}
-            </body>
+            <HabiticaProvider>
+               <body className={`${geistSans.variable} ${geistMono.variable}`}>
+                  <NavMenu />
+                  {children}
+               </body>
+            </HabiticaProvider>
          </SessionProvider>
       </html>
    )
