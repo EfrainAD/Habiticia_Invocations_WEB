@@ -1,7 +1,6 @@
 import NextAuth from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 import GithubProvider from 'next-auth/providers/github'
-const HABITICA_USER_ID = 'idtest'
 
 export const authOptions = {
    providers: [

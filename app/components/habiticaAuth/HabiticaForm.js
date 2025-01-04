@@ -1,13 +1,22 @@
+/* Notes: 
+   Show if:
+      1. There is no user id or api key for habitica
+      2. There is no api key but there is a user id
+   - This is why it only updates user id if usehabitica has updated it.
+*/
 'use client'
 
 import { useHabitica } from '@/app/context/habiticaAuth'
+import { getHabiticaAuth } from '@/app/lib/services/dbService'
+import { useSession } from 'next-auth/react'
 import { useState } from 'react'
 
 export default function HabiticaForm() {
-   const [userId, setUserId] = useState('')
-   const [apiKey, setApiKey] = useState('')
+   const { data: session } = useSession()
+   const { habiticaAuth, updateHabiticaAuth } = useHabitica()
 
-   const { updateHabiticaAuth } = useHabitica()
+   const [userId, setUserId] = useState(habiticaAuth.userId || '')
+   const [apiKey, setApiKey] = useState('')
 
    const handleSubmit = (e) => {
       e.preventDefault()
@@ -16,6 +25,19 @@ export default function HabiticaForm() {
          userId,
          apiKey,
       })
+   }
+
+   const handleFetch = async () => {
+      const habiticaAuth = await getHabiticaAuth()
+
+      if (!habiticaAuth) {
+         alert(
+            'You do you not have your habitica userId and api key saved in Habitica Invocation'
+         )
+      }
+
+      updateHabiticaAuth(habiticaAuth)
+      setUserId(habiticaAuth.userId || '')
    }
 
    return (
@@ -42,6 +64,13 @@ export default function HabiticaForm() {
                required
             />
          </div>
+
+         {session ? (
+            <button type="button" onClick={() => handleFetch()}>
+               fetch from Habitica Invocation
+            </button>
+         ) : null}
+
          <button type="submit">Save</button>
       </form>
    )

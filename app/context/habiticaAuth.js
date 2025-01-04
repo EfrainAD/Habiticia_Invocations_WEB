@@ -12,7 +12,7 @@ export const HabiticaProvider = ({ children }) => {
 
    const isHabiticaAuth = !!habiticaAuth.userId && !!habiticaAuth.apiKey
 
-   const updateHabiticaAuth = ({ userId, apiKey }) => {
+   const updateHabiticaAuth = ({ userId, apiKey = null }) => {
       setHabiticaAuth({ userId, apiKey })
    }
 
