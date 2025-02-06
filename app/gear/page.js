@@ -10,15 +10,19 @@ export default function Page() {
    const [message, setMessage] = useState('')
 
    const handleChangeGear = async (stat) => {
-      setMessage('Sending...')
+      setMessage('Changing...')
       try {
          await EquipBestGearForStat(stat, habiticaAuth)
 
-         setMessage(`Change to your highest ${stat.toUpperCase()} gear!`)
+         setMessage(
+            `Changed your gear that will give you the highest ${stat.toUpperCase()}!`
+         )
       } catch (error) {
          console.log({ error })
 
-         setMessage(`Failed to change gear!\nError Message${error.message}`)
+         setMessage(
+            `Failed to change gear!\nError Message: ${error.response.data.message}`
+         )
       }
    }
 
