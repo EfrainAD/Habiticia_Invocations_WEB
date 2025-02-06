@@ -34,10 +34,10 @@ export default function HabiticaForm() {
          alert(
             'You do you not have your habitica userId and api key saved in Habitica Invocation'
          )
+      } else {
+         updateHabiticaAuth(habiticaAuth)
+         setUserId(habiticaAuth.userId || '')
       }
-
-      updateHabiticaAuth(habiticaAuth)
-      setUserId(habiticaAuth.userId || '')
    }
 
    return (
