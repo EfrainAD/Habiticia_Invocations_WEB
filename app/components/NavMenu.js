@@ -13,6 +13,7 @@ export default function NavMenu() {
          <Link href={'/'}>home</Link>
          <Link href={'/habitica'}>Habitica</Link>
          <Link href={'/gear'}>Gear</Link>
+         <Link href={'/skills'}>Skills</Link>
          <AuthButton />
          {isHabiticaAuth ? 'Habitica Auth is Set' : <HabiticaForm />}
       </>

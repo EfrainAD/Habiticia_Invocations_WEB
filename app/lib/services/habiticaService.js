@@ -4,7 +4,15 @@ import {
    getUserEquippedGear,
    getGearData,
 } from '@/app/lib/utils/habiticaData'
-import { equip } from '@/app/lib/utils/habiticaAPI'
+import {
+   castSkill,
+   equip,
+   fetchHabiticaSpellData,
+   fetchUserData,
+   fetchUsersTasks,
+} from '@/app/lib/utils/habiticaAPI'
+
+const habiticaAuthErrorMsg = "Your Habitica's user id and api key is required"
 
 const isHabiticaAuthValid = (authObj) => {
    const { userId, apiKey } = authObj
@@ -75,7 +83,7 @@ const selectBestWeaponAndShield = (gearSet, stat) => {
 
 export const EquipBestGearForStat = async (targetStat, habiticaAuth) => {
    if (!isHabiticaAuthValid(habiticaAuth)) {
-      throw new Error("Your Habitica's user id and api key is required")
+      throw new Error(habiticaAuthErrorMsg)
    }
 
    const userClass = await getUserClass(habiticaAuth)
@@ -132,4 +140,56 @@ export const EquipBestGearForStat = async (targetStat, habiticaAuth) => {
       postEquipGear: equippedGear,
       equippedGear: bestGearByStat,
    }
+}
+
+export const castSkillAllOut = async (
+   skillName,
+   habiticaAuth,
+   targetManaLeftover = 0
+) => {
+   if (!isHabiticaAuthValid(habiticaAuth)) {
+      throw new Error(habiticaAuthErrorMsg)
+   }
+
+   const spellInfo = await fetchHabiticaSpellData(skillName)
+   const userData = await fetchUserData(habiticaAuth)
+
+   const spellCost = spellInfo.mana
+   const mana = userData.stats.mp
+   const manaToUse = mana - targetManaLeftover
+
+   const maxCasts = Math.floor(manaToUse / spellCost)
+   let targetTaskId = null
+
+   if (spellInfo.target === 'task') {
+      const tasks = await fetchUsersTasks(habiticaAuth)
+
+      const bestTask = tasks.reduce((max, task) => {
+         if (
+            !max &&
+            (task.type === 'habit' ||
+               task.type === 'daily' ||
+               task.type === 'todo')
+         ) {
+            return task
+         } else if (
+            task.type === 'habit' ||
+            task.type === 'daily' ||
+            task.type === 'todo'
+         ) {
+            return task.value > max.value ? task : max
+         } else {
+            return max
+         }
+      }, null)
+
+      targetTaskId = bestTask._id
+   }
+
+   for (let i = 0; i < maxCasts; i++) {
+      await castSkill(skillName, habiticaAuth, targetTaskId)
+      await new Promise((res) => setTimeout(res, 1000))
+   }
+
+   return maxCasts
 }
