@@ -1,5 +1,5 @@
 'use client'
-import axios from 'axios'
+import { habiticaAxios } from './habiticaAxios'
 import { removeUserEquippedGear } from './habiticaData'
 
 const createHeader = (habiticaAuth) => {
@@ -62,25 +62,20 @@ export const castSkill = async (skillName, habiticaAuth, target = null) => {
       throw new Error(`Invalid skill name: ${skillName}`)
    }
 
-   const res = await axios.post(
-      `https://habitica.com/api/v3/user/class/cast/${skillKey}${
-         target ? `?targetId=${target}` : ``
-      }`,
+   const res = await habiticaAxios.post(
+      `/user/class/cast/${skillKey}${target ? `?targetId=${target}` : ``}`,
       {},
       {
          headers,
       }
    )
 
-   return res.data
+   return res?.data
 }
 
 export const fetchHabiticaGearData = async () => {
-   const habiticaContent = await axios.get(
-      'https://habitica.com/api/v3/content'
-   )
-
-   const habiticaGear = habiticaContent.data.data.gear.flat
+   const habiticaContent = await habiticaAxios.get('/content')
+   const habiticaGear = habiticaContent?.data?.data?.gear?.flat
 
    return habiticaGear
 }
@@ -88,15 +83,13 @@ export const fetchHabiticaGearData = async () => {
 export const fetchHabiticaSpellData = async (targetSpell) => {
    let foundSpell = null
 
-   const habiticaContent = await axios.get(
-      'https://habitica.com/api/v3/content'
-   )
+   const habiticaContent = await habiticaAxios.get('/content')
 
    const habiticaSpells = habiticaContent.data.data.spells
 
    for (const spellType in habiticaSpells) {
       for (const spell in habiticaSpells[spellType]) {
-         if (habiticaSpells[spellType][spell].key === targetSpell)
+         if (habiticaSpells[spellType]?.[spell]?.key === targetSpell)
             foundSpell = habiticaSpells[spellType][spell]
       }
    }
@@ -107,36 +100,33 @@ export const fetchHabiticaSpellData = async (targetSpell) => {
 export const fetchUserData = async (habiticaAuth) => {
    const headers = createHeader(habiticaAuth)
 
-   const userData = await axios.get(
-      'https://habitica.com/api/v3/user/anonymized',
-      {
-         headers,
-      }
-   )
+   const userData = await habiticaAxios.get('/user/anonymized', {
+      headers,
+   })
 
-   return userData.data.data.user
+   return userData?.data?.data?.user
 }
 
 export const fetchUsersTasks = async (habiticaAuth) => {
    const headers = createHeader(habiticaAuth)
 
-   const tasks = await axios.get('https://habitica.com/api/v3/tasks/user', {
+   const tasks = await habiticaAxios.get('/tasks/user', {
       headers,
    })
 
-   return tasks.data.data
+   return tasks?.data?.data
 }
 
 export const equip = async (gear, habiticaAuth) => {
    const headers = createHeader(habiticaAuth)
 
-   const res = await axios.post(
-      `https://habitica.com/api/v3/user/equip/equipped/${gear}`,
+   const res = await habiticaAxios.post(
+      `/user/equip/equipped/${gear}`,
       {},
       { headers }
    )
 
    removeUserEquippedGear()
 
-   return res.data.data.gear.equipped
+   return res?.data?.data?.gear?.equipped
 }
