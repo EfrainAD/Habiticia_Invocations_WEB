@@ -188,8 +188,64 @@ export const castSkillAllOut = async (
 
    for (let i = 0; i < maxCasts; i++) {
       await castSkill(skillName, habiticaAuth, targetTaskId)
-      await new Promise((res) => setTimeout(res, 1000))
    }
 
    return maxCasts
+}
+
+export const castSkillXTimes = async (
+   skillName,
+   habiticaAuth,
+   castTimes = 1
+) => {
+   if (!isHabiticaAuthValid(habiticaAuth)) {
+      throw new Error(habiticaAuthErrorMsg)
+   }
+
+   const spellInfo = await fetchHabiticaSpellData(skillName)
+   const userData = await fetchUserData(habiticaAuth)
+
+   const spellCost = spellInfo.mana
+   const mana = userData.stats.mp
+   const spellTotalCost = castTimes * spellCost
+
+   // Don't have enough mana for castTimes, then just use what the user has.
+   if (mana < spellTotalCost) {
+      maxCasts = await castSkillAllOut(skillName, habiticaAuth, 0)
+      return maxCasts
+   } else {
+      const numberOfCasts = castTimes
+      let targetTaskId = null
+
+      if (spellInfo.target === 'task') {
+         const tasks = await fetchUsersTasks(habiticaAuth)
+
+         const bestTask = tasks.reduce((max, task) => {
+            if (
+               !max &&
+               (task.type === 'habit' ||
+                  task.type === 'daily' ||
+                  task.type === 'todo')
+            ) {
+               return task
+            } else if (
+               task.type === 'habit' ||
+               task.type === 'daily' ||
+               task.type === 'todo'
+            ) {
+               return task.value > max.value ? task : max
+            } else {
+               return max
+            }
+         }, null)
+
+         targetTaskId = bestTask._id
+      }
+
+      for (let i = 0; i < numberOfCasts; i++) {
+         await castSkill(skillName, habiticaAuth, targetTaskId)
+      }
+
+      return numberOfCasts
+   }
 }

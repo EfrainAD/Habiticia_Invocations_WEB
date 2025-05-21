@@ -1,13 +1,17 @@
 'use client'
 import styles from '@/app/page.module.css'
 import { useHabitica } from '../context/habiticaAuth'
-import { castSkillAllOut } from '@/app/lib/services/habiticaService.js'
+import {
+   castSkillAllOut,
+   castSkillXTimes,
+} from '@/app/lib/services/habiticaService.js'
 import { useState } from 'react'
 
 export default function Page() {
    const { habiticaAuth } = useHabitica()
    const [message, setMessage] = useState('')
-   const [targetManaLeftover, setTargetManaLeftover] = useState(0)
+   const [manaReserve, setManaReserve] = useState('')
+   const [castCount, setCastCount] = useState('')
 
    const skillMap = {
       fireball: 'Burst of Flames',
@@ -34,15 +38,26 @@ export default function Page() {
 
    const handleCastingSkill = async (skillName) => {
       setMessage('Casting...')
+
       try {
-         const maxCast = await castSkillAllOut(
-            skillName,
-            habiticaAuth,
-            targetManaLeftover
-         )
+         let numberOfCasts = null
+
+         if (castCount > 0) {
+            numberOfCasts = await castSkillXTimes(
+               skillName,
+               habiticaAuth,
+               castCount
+            )
+         } else if (manaReserve > 0) {
+            numberOfCasts = await castSkillAllOut(
+               skillName,
+               habiticaAuth,
+               manaReserve
+            )
+         }
 
          setMessage(
-            `${skillMap[skillName]} has been casted! ${maxCast} number of times!`
+            `${skillMap[skillName]} has been casted! ${numberOfCasts} number of times!`
          )
       } catch (error) {
          console.log({ error })
@@ -54,10 +69,24 @@ export default function Page() {
    }
 
    const handleManaChange = (e) => {
-      const sanitizedValue = e.target.value.replace(/[^0-9]/g, '')
-      const numberValue = Number(sanitizedValue)
+      const limitType = e.target.name
+      const value = Number(e.target.value.replace(/[^0-9]/g, ''))
 
-      setTargetManaLeftover(numberValue)
+      if (limitType === 'castLimitByCount') {
+         setCastCount(value)
+      } else if (limitType === 'castLimitByMana') {
+         setManaReserve(value)
+      }
+   }
+
+   const enforceSingleInput = (e) => {
+      const limitType = e.target.name
+
+      if (limitType === 'castLimitByCount') {
+         setManaReserve('')
+      } else if (limitType === 'castLimitByMana') {
+         setCastCount('')
+      }
    }
 
    return (
@@ -77,17 +106,41 @@ export default function Page() {
                   gap: '8px',
                }}
             >
-               <label htmlFor="manaInput">
+               <label htmlFor="castLimitByMana">
                   If you want mana left over, You can put how much mana you want
                   left over after casting.
                </label>
                <input
-                  id="manaInput"
+                  id="castLimitByMana"
+                  name="castLimitByMana"
                   type="text"
                   inputMode="numeric"
                   style={{ maxWidth: '100px', textAlign: 'center' }}
-                  value={targetManaLeftover}
+                  value={manaReserve}
                   onChange={handleManaChange}
+                  onFocus={enforceSingleInput}
+               />
+            </div>
+            <div
+               style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px',
+               }}
+            >
+               <label htmlFor="castLimitByCount">
+                  If you want to cast it X number of times, You can put how how
+                  many times instead.
+               </label>
+               <input
+                  id="castLimitByCount"
+                  name="castLimitByCount"
+                  type="text"
+                  inputMode="numeric"
+                  style={{ maxWidth: '100px', textAlign: 'center' }}
+                  value={castCount}
+                  onChange={handleManaChange}
+                  onFocus={enforceSingleInput}
                />
             </div>
             <div>
