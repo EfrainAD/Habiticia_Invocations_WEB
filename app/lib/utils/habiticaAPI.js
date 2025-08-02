@@ -3,6 +3,10 @@ import { habiticaAxios } from './habiticaAxios'
 import { removeUserEquippedGear } from './habiticaData'
 
 const createHeader = (habiticaAuth) => {
+   console.log(
+      "Is this there'x-client: process.env.NEXT_PUBLIC_HABITICA_CLIENT:",
+      process.env.NEXT_PUBLIC_HABITICA_CLIENT
+   )
    return {
       'x-api-user': habiticaAuth.userId,
       'x-api-key': habiticaAuth.apiKey,
