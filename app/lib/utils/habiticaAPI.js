@@ -141,3 +141,15 @@ export const fetchPartyMembers = async (partyId, habiticaAuth) => {
 
    return res?.data?.data
 }
+
+export const deletePartyMember = async (partyId, memberId, habiticaAuth, message) => {
+   const headers = createHeader(habiticaAuth)
+   
+   const res = await habiticaAxios.post(
+      `/groups/${partyId}/removeMember/${memberId}${message ? `?message=${encodeURIComponent(message)}` : '' }`,
+      {},
+      { headers }
+   )
+   
+   return res?.data?.data
+}
