@@ -3,11 +3,13 @@ import {
    getUserClass,
    getUserEquippedGear,
    getGearData,
+   getUserPartyId,
 } from '@/app/lib/utils/habiticaData'
 import {
    castSkill,
    equip,
    fetchHabiticaSpellData,
+   fetchPartyMembers,
    fetchUserData,
    fetchUsersTasks,
 } from '@/app/lib/utils/habiticaAPI'
@@ -79,6 +81,23 @@ const selectBestWeaponAndShield = (gearSet, stat) => {
       weapon,
       shield,
    }
+}
+
+export const getPartyMembers = async (habiticaAuth) => {
+   const partyId = await getUserPartyId(habiticaAuth)
+   
+   if (!partyId) return null
+
+   const partyMembers = await fetchPartyMembers(partyId, habiticaAuth)
+
+   // Format the logged in dates in the member fields.
+   for (const partyMember of partyMembers) {
+      if (partyMember.auth?.timestamps?.loggedin) {
+         partyMember.auth.timestamps.loggedin = new Date(partyMember.auth.timestamps.loggedin)
+      }
+   }
+   
+   return partyMembers
 }
 
 export const EquipBestGearForStat = async (targetStat, habiticaAuth) => {
