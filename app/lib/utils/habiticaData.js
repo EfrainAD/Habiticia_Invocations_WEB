@@ -45,11 +45,24 @@ const updateUserHabiticaData = async (habiticaAuth) => {
 
    // Add localStorage
    localStorage.setItem('userClass', user.stats.class)
+   localStorage.setItem('partyId', user.party._id)
    localStorage.setItem('ownedGear', JSON.stringify(user.items.gear.owned))
    localStorage.setItem(
       'equippedGear',
       JSON.stringify(user.items.gear.equipped)
    )
+}
+
+export const getUserPartyId = async (habiticaAuth) => {
+   let value = localStorage.getItem('partyId')
+
+   if (value === null) {
+      await updateUserHabiticaData(habiticaAuth)
+
+      value = localStorage.getItem('partyId')
+   }
+
+   return value
 }
 
 export const getUserClass = async (habiticaAuth) => {

@@ -134,3 +134,14 @@ export const equip = async (gear, habiticaAuth) => {
 
    return res?.data?.data?.gear?.equipped
 }
+
+export const fetchPartyMembers = async (partyId, habiticaAuth) => {
+   const headers = createHeader(habiticaAuth)
+
+   const res = await habiticaAxios.get(
+      `/groups/${partyId}/members?includeAllPublicFields=true`,
+      { headers }
+   )
+
+   return res?.data?.data
+}
