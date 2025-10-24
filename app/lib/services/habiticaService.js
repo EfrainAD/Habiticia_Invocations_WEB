@@ -187,7 +187,6 @@ export const castSkillAllOut = async (
    if (!isHabiticaAuthValid(habiticaAuth)) {
       throw new Error(habiticaAuthErrorMsg)
    }
-
    const spellInfo = await fetchHabiticaSpellData(skillName)
    const userData = await fetchUserData(habiticaAuth)
 

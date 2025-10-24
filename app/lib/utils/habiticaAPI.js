@@ -10,7 +10,6 @@ const createHeader = (habiticaAuth) => {
    return {
       'x-api-user': habiticaAuth.userId,
       'x-api-key': habiticaAuth.apiKey,
-      'x-client': process.env.NEXT_PUBLIC_HABITICA_CLIENT,
    }
 }
 
