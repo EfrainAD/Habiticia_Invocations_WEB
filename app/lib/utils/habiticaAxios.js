@@ -3,6 +3,7 @@ import axios from 'axios'
 
 export const habiticaAxios = axios.create({
    baseURL: 'https://habitica.com/api/v3',
+   headers: {'x-client': process.env.NEXT_PUBLIC_HABITICA_CLIENT},
 })
 
 habiticaAxios.interceptors.response.use((response) => {
