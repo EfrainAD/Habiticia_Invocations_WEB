@@ -7,6 +7,7 @@ import {
 } from '@/app/lib/utils/habiticaData'
 import {
    castSkill,
+   deletePartyMember,
    equip,
    fetchHabiticaSpellData,
    fetchPartyMembers,
@@ -98,6 +99,23 @@ export const getPartyMembers = async (habiticaAuth) => {
    }
    
    return partyMembers
+}
+
+export const removePartyMembers = async (partyMembers, habiticaAuth) => {
+   const partyId = await getUserPartyId(habiticaAuth)
+   
+   if (!partyId) return null
+   
+   // If partyMembers is not an array, convert it to one.
+   if (!Array.isArray(partyMembers)) {
+      partyMembers = [partyMembers]
+   }
+   
+   for (const partyMember of partyMembers) {
+      const memberId = partyMember._id
+
+      await deletePartyMember(partyId, memberId, habiticaAuth)
+   }
 }
 
 export const EquipBestGearForStat = async (targetStat, habiticaAuth) => {
