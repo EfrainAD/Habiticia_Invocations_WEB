@@ -58,11 +58,15 @@ export default function Page() {
       }
    }
 
+   const isInactiveMembers = inactiveMembers.length > 0
+
    return (
       <div className={styles.page}>
          <main className={styles.main}>
             <h1>Party Members</h1>
             <p>Member that have not been on in 30 days are marked as inactive.</p>
+            { isInactiveMembers && <button onClick={() => removeUser(inactiveMembers, false)}>Remove all inactive users</button>}
+            {!isInactiveMembers && isHabiticaAuth && <p>There are no inactive members.</p>}
             <ul>
                {inactiveMembers.map((partyMember, index) => (   
                   <li key={partyMember._id}>
@@ -75,9 +79,7 @@ export default function Page() {
                ))}
             </ul>
             {message && 
-               <pre>
-                  <p>{message}</p>
-               </pre>
+                  <p><em>{message}</em></p>
             }
          </main>
       </div>
